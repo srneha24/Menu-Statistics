@@ -42,19 +42,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-<<<<<<< HEAD
-
     'rest_framework',
     'drf_spectacular',
-
-=======
-    'rest_framework',
->>>>>>> b9152bfd9817422afa7e5eeb815016a73a63bbb6
     'Company'
 ]
 
 # Rest Framework
-
 REST_FRAMEWORK = {
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
 }

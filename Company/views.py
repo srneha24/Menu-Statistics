@@ -1,12 +1,14 @@
+from django.shortcuts import get_object_or_404
 from rest_framework.decorators import api_view
 from rest_framework import status, generics
 from rest_framework.response import Response
 
 import logging
+from django.db.models import F
 
 # Create your views here.
-from Company.models import Menu
-from Company.serializers import MenuSerializer
+from Company.models import Menu, HitDate
+from Company.serializers import MenuSerializer, HitSerializer
 
 log = logging.getLogger('main')
 
@@ -85,3 +87,14 @@ def menu_view(request, branch_id):
 class MenuCreateView(generics.CreateAPIView):
     queryset = Menu.objects.all()
     serializer_class = MenuSerializer
+
+
+class HitRetrieveView(generics.RetrieveAPIView):
+    queryset = HitDate.objects.all()
+    serializer_class = HitSerializer
+
+    def retrieve(self, request, *args, **kwargs):
+        menu = get_object_or_404(HitDate, pk=kwargs.get('pk'))
+        menu.count = F('count') + 1
+        menu.save()
+        return Response({'hit!!!'})

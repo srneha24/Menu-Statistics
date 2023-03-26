@@ -4,7 +4,8 @@ from .views import (
     branch_view,
     menu_view,
     MenuListView,
-    MenuCreateView
+    MenuCreateView,
+    HitRetrieveView,
 )
 
 app_name = "Company"
@@ -15,4 +16,5 @@ urlpatterns = [
     path('branch/menu/<int:branch_id>/', menu_view, name="MenuStatistics"),
     path('menus/', MenuListView.as_view(), name="menu_list"),
     path('menu-create/', MenuCreateView.as_view(), name="menu_create"),
+    path('hits/<str:pk>/', HitRetrieveView.as_view(), name="hit_retrieve"),
 ]
