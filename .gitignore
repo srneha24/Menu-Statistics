@@ -1,0 +1,15 @@
+#IDE
+.idea
+
+# Virtual Environment
+venv/
+
+# Secret
+.env
+
+# Log
+*.log
+
+# Cache
+__pycache__/
+migrations/
