@@ -45,9 +45,6 @@ class HitDate(models.Model):
     count = models.IntegerField(null=False, blank=False, default=0)
     date = models.DateField(null=False, blank=False)
 
-    def __str__(self):
-        return self.menu
-
     class Meta:
         managed = True
         db_table = 'hit_date'
