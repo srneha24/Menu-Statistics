@@ -30,7 +30,6 @@ class Branch(models.Model):
 class Menu(models.Model):
     menu_name = models.CharField(max_length=150, unique=True, null=False, blank=False)
     branch = models.ForeignKey(Branch, on_delete=models.CASCADE, null=False, blank=False)
-    count = models.IntegerField(null=False, blank=False, default=0)
 
     def __str__(self):
         return self.menu_name

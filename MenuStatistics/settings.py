@@ -42,14 +42,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-<<<<<<< HEAD
 
     'rest_framework',
     'drf_spectacular',
 
-=======
-    'rest_framework',
->>>>>>> b9152bfd9817422afa7e5eeb815016a73a63bbb6
     'Company'
 ]
 
@@ -114,7 +110,7 @@ LOGGING = {
         },
         'file': {
             'class': 'logging.FileHandler',
-            'filename': 'BrokerLogs.log',
+            'filename': 'MenuStatistics.log',
             'formatter': 'verbose'
         }
     },

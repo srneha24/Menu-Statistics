@@ -4,10 +4,12 @@ from rest_framework.response import Response
 
 import logging
 
+from .models import Menu
+from .serializers import MenuSerializer, ResultSerializer
+from .queries import company_year
+
 
 # Create your views here.
-from Company.models import Menu
-from Company.serializers import MenuSerializer
 
 log = logging.getLogger('main')
 
@@ -19,6 +21,7 @@ class MenuListView(generics.ListAPIView):
 
 @api_view(["GET"])
 def company_view(request, company_id):
+    log.info("%s %s", request.method, request.build_absolute_uri())
     params = request.query_params
     year = params.get('year')
     month = params.get('month')
@@ -28,8 +31,11 @@ def company_view(request, company_id):
         return Response({'message': 'Year Parameter Required'})
     else:
         if month is None:
-            # Retrieve the data of all months of that year
-            pass
+            # Retrieve the data of all the months of that year
+            data = company_year(year, company_id)
+            serializer = ResultSerializer(data)
+
+            return Response(serializer.data, status=status.HTTP_302_FOUND)
         else:
             if week is None:
                 # Retrieve the data of all the days of that month of that year
@@ -41,6 +47,7 @@ def company_view(request, company_id):
 
 @api_view(["GET"])
 def branch_view(request, branch_id):
+    log.info("%s %s", request.method, request.build_absolute_uri())
     params = request.query_params
     year = params.get('year')
     month = params.get('month')
@@ -63,6 +70,7 @@ def branch_view(request, branch_id):
 
 @api_view(["GET"])
 def menu_view(request, branch_id):
+    log.info("%s %s", request.method, request.build_absolute_uri())
     params = request.query_params
     year = params.get('year')
     month = params.get('month')
