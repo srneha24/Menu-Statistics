@@ -1,13 +1,14 @@
+from django.shortcuts import get_object_or_404
 from rest_framework.decorators import api_view
 from rest_framework import status, generics
 from rest_framework.response import Response
 
 import logging
-
-from .models import Menu
-from .serializers import MenuSerializer, ResultSerializer
+from .serializers import MenuSerializer, ResultSerializer, HitSerializer
 from .queries import company_year
+from .models import Menu, HitDate
 
+from django.db.models import F
 
 # Create your views here.
 
@@ -89,3 +90,14 @@ def menu_view(request, branch_id):
             else:
                 # Retrieve the data of all the days of that week of that month
                 pass
+
+
+class HitRetrieveView(generics.RetrieveAPIView):
+    queryset = HitDate.objects.all()
+    serializer_class = HitSerializer
+
+    def retrieve(self, request, *args, **kwargs):
+        menu = get_object_or_404(HitDate, pk=kwargs.get('pk'))
+        menu.count = F('count') + 1
+        menu.save()
+        return Response({'hit!!!'})

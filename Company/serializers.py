@@ -1,19 +1,18 @@
-from django.db.models.query import RawQuerySet
 from rest_framework import serializers
 
-from .models import Menu
+from .models import Menu, HitDate
 
 import logging
 
-
 log = logging.getLogger('main')
 
+
 class MenuSerializer(serializers.ModelSerializer):
-    branch = serializers.CharField(source='branch.branch_name')
+    branch_name = serializers.CharField(source='branch.branch_name', read_only=True)
 
     class Meta:
         model = Menu
-        fields = ['id', 'menu_name', 'branch']
+        fields = ['id', 'menu_name', 'branch', 'branch_name']
 
 
 class ResultSerializer(serializers.Serializer):
@@ -35,3 +34,11 @@ class ResultSerializer(serializers.Serializer):
                 data[branch_name][menu_name] = {}
             data[branch_name][menu_name][str(date)] = count
         return data
+
+
+class HitSerializer(serializers.ModelSerializer):
+    menu_name = serializers.CharField(source='menu.menu_name', read_only=True)
+
+    class Meta:
+        model = HitDate
+        fields = ['id', 'menu', 'menu_name', 'count', 'date']
