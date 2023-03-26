@@ -4,7 +4,8 @@ from .views import (
     company_view,
     branch_view,
     menu_view,
-    hit_api
+    hit_api,
+    MenuListView
 )
 
 app_name = "Company"
@@ -14,4 +15,5 @@ urlpatterns = [
     path('branch/<int:branch_id>/', branch_view, name="BranchStatistics"),
     path('branch/menu/', hit_api, name="HitAPI"),
     path('branch/menu/<int:branch_id>/', menu_view, name="MenuStatistics"),
+    path('menu/', MenuListView.as_view(), name="MenuList")
 ]

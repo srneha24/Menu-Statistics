@@ -1,18 +1,21 @@
 from rest_framework.decorators import api_view
-from rest_framework import status
+from rest_framework import status, generics
 from rest_framework.response import Response
 
 import logging
 
 
 # Create your views here.
+from Company.models import Menu
+from Company.serializers import MenuSerializer
 
 log = logging.getLogger('main')
 
 
-@api_view(["POST"])
-def hit_api(request):
-    pass
+class MenuListView(generics.ListAPIView):
+    queryset = Menu.objects.all()
+    serializer_class = MenuSerializer
+
 
 @api_view(["GET"])
 def company_view(request, company_id):
