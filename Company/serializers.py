@@ -2,10 +2,6 @@ from rest_framework import serializers
 
 from .models import Menu, HitDate
 
-import logging
-
-log = logging.getLogger('main')
-
 
 class MenuSerializer(serializers.ModelSerializer):
     branch_name = serializers.CharField(source='branch.branch_name', read_only=True)
@@ -15,7 +11,7 @@ class MenuSerializer(serializers.ModelSerializer):
         fields = ['id', 'menu_name', 'branch', 'branch_name']
 
 
-class ResultSerializer(serializers.Serializer):
+class CompanyResultSerializer(serializers.Serializer):
     branch_name = serializers.CharField()
     menu_name = serializers.CharField()
     date = serializers.DateField()
@@ -34,6 +30,27 @@ class ResultSerializer(serializers.Serializer):
                 data[branch_name][menu_name] = {}
             data[branch_name][menu_name][str(date)] = count
         return data
+
+
+class BranchResultSerializer(serializers.Serializer):
+    menu_name = serializers.CharField()
+    date = serializers.DateField()
+    count = serializers.IntegerField()
+
+    def to_representation(self, queryset):
+        data = {}
+        for obj in queryset:
+            menu_name = obj.menu_name
+            date = obj.date
+            count = obj.count
+            if menu_name not in data:
+                data[menu_name] = {}
+            data[menu_name][str(date)] = count
+        return data
+
+
+class MenuResultSerializer(serializers.Serializer):
+    pass
 
 
 class HitSerializer(serializers.ModelSerializer):
