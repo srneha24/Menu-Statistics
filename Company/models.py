@@ -30,7 +30,7 @@ class Branch(models.Model):
 class Menu(models.Model):
     menu_name = models.CharField(max_length=150, unique=True, null=False, blank=False)
     branch = models.ForeignKey(Branch, on_delete=models.CASCADE, null=False, blank=False)
-    count = models.IntegerField(null=False, blank=False)
+    count = models.IntegerField(null=False, blank=False, default=0)
 
     def __str__(self):
         return self.menu_name
@@ -42,7 +42,7 @@ class Menu(models.Model):
 
 class HitDate(models.Model):
     menu = models.ForeignKey(Menu, on_delete=models.CASCADE, null=False, blank=False)
-    count = models.IntegerField(null=False, blank=False)
+    count = models.IntegerField(null=False, blank=False, default=0)
     date = models.DateField(null=False, blank=False)
 
     def __str__(self):
