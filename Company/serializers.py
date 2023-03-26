@@ -3,8 +3,8 @@ from .models import Menu
 
 
 class MenuSerializer(serializers.ModelSerializer):
-    branch = serializers.CharField(source='branch.branch_name')
+    branch_name = serializers.CharField(source='branch.branch_name',read_only=True)
 
     class Meta:
         model = Menu
-        fields = ['id', 'menu_name', 'branch']
+        fields = ['id', 'menu_name', 'branch','branch_name']

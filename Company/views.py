@@ -4,7 +4,6 @@ from rest_framework.response import Response
 
 import logging
 
-
 # Create your views here.
 from Company.models import Menu
 from Company.serializers import MenuSerializer
@@ -81,3 +80,8 @@ def menu_view(request, branch_id):
             else:
                 # Retrieve the data of all the days of that week of that month
                 pass
+
+
+class MenuCreateView(generics.CreateAPIView):
+    queryset = Menu.objects.all()
+    serializer_class = MenuSerializer
