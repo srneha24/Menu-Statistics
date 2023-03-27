@@ -7,4 +7,9 @@ from .models import Company, Branch, Menu, HitDate
 admin.site.register(Company)
 admin.site.register(Branch)
 admin.site.register(Menu)
-admin.site.register(HitDate)
+
+
+class HitAdmin(admin.ModelAdmin):
+    list_display = ['menu','count']
+
+admin.site.register(HitDate,HitAdmin)
