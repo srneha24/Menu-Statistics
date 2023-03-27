@@ -109,9 +109,8 @@ class HitRetrieveView(generics.RetrieveAPIView):
 
     def retrieve(self, request, *args, **kwargs):
         current_date = datetime.datetime.now().strftime("%Y-%m-%d")
-
+        menu = get_object_or_404(Menu, pk=kwargs.get('pk'))
         try:
-            menu = Menu.objects.get(pk=kwargs.get('pk'))
             hit = HitDate.objects.get(menu=menu, date=current_date)
             if hit:
                 hit.count = F('count') + 1
