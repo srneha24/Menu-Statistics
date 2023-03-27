@@ -1,4 +1,5 @@
 import logging
+import datetime
 
 from django.db.models import F
 from django.shortcuts import get_object_or_404
@@ -11,6 +12,7 @@ from .models import Menu, HitDate
 from .queries import Queries, FillMissingDates
 from .serializers import MenuSerializer, HitSerializer
 from .serializers import ResultSerializer, MenuResultSerializer
+from .custom_models import QueryObject
 
 # Create your views here.
 

@@ -31,10 +31,10 @@ class MenuResultSerializer(serializers.Serializer):
         for obj in queryset:
             menu_name = obj.menu_name
             date = obj.date
-            count = obj.sum
+            sum = obj.sum
             if menu_name not in data:
                 data[menu_name] = []
-            data[menu_name].append({"date": date, "count": count})
+            data[menu_name].append({"date": date, "count": sum})
         return data
 
 

@@ -6,8 +6,8 @@ from django.db import models
 class Company(models.Model):
     company_name = models.CharField(max_length=150, unique=True, null=False, blank=False)
 
-    def __str__(self):
-        return self.company_name
+    # def __str__(self):
+    #     return self.company_name
 
     class Meta:
         managed = True
@@ -19,8 +19,8 @@ class Branch(models.Model):
     company = models.ForeignKey(Company, on_delete=models.CASCADE, null=False, blank=False)
     location = models.CharField(max_length=50, null=True, blank=True)
 
-    def __str__(self):
-        return self.branch_name
+    # def __str__(self):
+    #     return self.branch_name
 
     class Meta:
         managed = True
@@ -31,8 +31,8 @@ class Menu(models.Model):
     menu_name = models.CharField(max_length=150, unique=True, null=False, blank=False)
     branch = models.ForeignKey(Branch, on_delete=models.CASCADE, null=False, blank=False)
 
-    def __str__(self):
-        return self.menu_name
+    # def __str__(self):
+    #     return self.menu_name
 
     class Meta:
         managed = True

@@ -30,21 +30,31 @@ class Queries:
                                          "WHERE branch.id = %s " +
                                          "AND branch.id = menu.branch_id and hit_date.menu_id = menu.id " +
                                          "AND hit_date.date BETWEEN %s AND %s " +
-                                         "GROUP BY BY hit_date.date, hit_date.id " +
+                                         "GROUP BY hit_date.date, hit_date.id " +
                                          "ORDER BY hit_date.date",
                                          [self.__stats_for_id, self.__start, self.__end])
         return self.__create_model_object(result)
 
     def __menu_query(self):
-        result = QueryObject.objects.raw("SELECT hit_date.id, hit_date.date, hit_date.count, menu.menu_name " +
+        result = QueryObject.objects.raw("SELECT hit_date.id, hit_date.date, SUM(hit_date.count), menu.menu_name " +
                                          "FROM hit_date, menu, branch " +
                                          "WHERE branch.id = %s " +
                                          "AND branch.id = menu.branch_id and hit_date.menu_id = menu.id " +
                                          "AND hit_date.date BETWEEN %s AND %s " +
-                                         "GROUP BY hit_date.date, menu.id, branch.id, hit_date.count, hit_date.id " +
+                                         "GROUP BY hit_date.date, menu.id, branch.id, hit_date.id " +
                                          "ORDER BY hit_date.date",
                                          [self.__stats_for_id, self.__start, self.__end])
-        return self.__create_model_object(result)
+        return result
+
+    def empty_menu(self):
+        result = QueryObject.objects.raw("SELECT menu.menu_name " +
+                                         "FROM menu, branch " +
+                                         "WHERE branch.id = %s " +
+                                         "AND branch.id = menu.branch_id " +
+                                         "ORDER BY menu.menu_name",
+                                         [self.__stats_for_id, self.__start, self.__end])
+
+        return result
 
     def __create_model_object(self, result):
         obj = list()
@@ -54,6 +64,11 @@ class Queries:
 
             temp.date = res.date
             temp.count = res.sum
+
+            try:
+                temp.menu_name = res.menu_name
+            except Exception as e:
+                pass
 
             obj.append(temp)
 
@@ -158,7 +173,24 @@ class FillMissingDates:
         return new_data
 
     def for_menu(self, data):
-        pass
+        start_date = datetime.datetime.strptime(self.start_date_str, '%Y-%m-%d')
+        end_date = datetime.datetime.strptime(self.end_date_str, '%Y-%m-%d')
+
+        for menu in data:
+            menu_list = data[menu]
+            date_range = [(start_date + datetime.timedelta(days=x)).date() for x in
+                          range((end_date - start_date).days + 1)]
+            new_menu_list = []
+            log.debug(menu_list[0]['date'] == '2023-03-02')
+            for date in date_range:
+                count = sum(item['count'] for item in menu_list if item['date'] == date)
+                new_menu_list.append({
+                    'date': str(date),
+                    'count': count
+                })
+            data[menu] = new_menu_list
+
+        return data
 
     def __init__(self, start_date_str, end_date_str):
         self.start_date_str = start_date_str
