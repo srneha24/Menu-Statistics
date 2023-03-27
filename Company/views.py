@@ -106,7 +106,8 @@ class HitRetrieveView(generics.RetrieveAPIView):
     serializer_class = HitSerializer
 
     def retrieve(self, request, *args, **kwargs):
-        menu = get_object_or_404(HitDate, pk=kwargs.get('pk'))
-        menu.count = F('count') + 1
-        menu.save()
+        menu = get_object_or_404(Menu, pk=kwargs.get('pk'))
+        hit = get_object_or_404(HitDate, menu=menu)
+        hit.count = F('count') + 1
+        hit.save()
         return Response({"message": "API Hit"})
