@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
 from .models import Menu, HitDate
+from .custom_models import QueryObject
 
 
 class MenuSerializer(serializers.ModelSerializer):
@@ -11,46 +12,30 @@ class MenuSerializer(serializers.ModelSerializer):
         fields = ['id', 'menu_name', 'branch', 'branch_name']
 
 
-class CompanyResultSerializer(serializers.Serializer):
-    branch_name = serializers.CharField()
-    menu_name = serializers.CharField()
+class ResultSerializer(serializers.ModelSerializer):
     date = serializers.DateField()
     count = serializers.IntegerField()
 
-    def to_representation(self, queryset):
-        data = {}
-        for obj in queryset:
-            branch_name = obj.branch_name
-            menu_name = obj.menu_name
-            date = obj.date
-            count = obj.count
-            if branch_name not in data:
-                data[branch_name] = {}
-            if menu_name not in data[branch_name]:
-                data[branch_name][menu_name] = {}
-            data[branch_name][menu_name][str(date)] = count
-        return data
-
-
-class BranchResultSerializer(serializers.Serializer):
-    menu_name = serializers.CharField()
-    date = serializers.DateField()
-    count = serializers.IntegerField()
-
-    def to_representation(self, queryset):
-        data = {}
-        for obj in queryset:
-            menu_name = obj.menu_name
-            date = obj.date
-            count = obj.count
-            if menu_name not in data:
-                data[menu_name] = {}
-            data[menu_name][str(date)] = count
-        return data
+    class Meta:
+        model = QueryObject
+        fields = ["date", "count"]
 
 
 class MenuResultSerializer(serializers.Serializer):
-    pass
+    menu_name = serializers.CharField()
+    date = serializers.DateField()
+    sum = serializers.IntegerField()
+
+    def to_representation(self, queryset):
+        data = {}
+        for obj in queryset:
+            menu_name = obj.menu_name
+            date = obj.date
+            count = obj.sum
+            if menu_name not in data:
+                data[menu_name] = []
+            data[menu_name].append({"date": date, "count": count})
+        return data
 
 
 class HitSerializer(serializers.ModelSerializer):

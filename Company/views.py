@@ -10,7 +10,7 @@ from drf_spectacular.utils import extend_schema
 from .models import Menu, HitDate
 from .queries import Queries, FillMissingDates
 from .serializers import MenuSerializer, HitSerializer
-from .serializers import CompanyResultSerializer, BranchResultSerializer, MenuResultSerializer
+from .serializers import ResultSerializer, MenuResultSerializer
 
 # Create your views here.
 
@@ -23,7 +23,7 @@ class MenuListView(generics.ListAPIView):
 
 
 @api_view(["GET"])
-@extend_schema(responses=CompanyResultSerializer)
+@extend_schema(responses=ResultSerializer)
 def company_view(request, company_id):
     log.info("%s %s", request.method, request.build_absolute_uri())
 
@@ -36,7 +36,7 @@ def company_view(request, company_id):
 
 
 @api_view(["GET"])
-@extend_schema(responses=BranchResultSerializer)
+@extend_schema(responses=ResultSerializer)
 def branch_view(request, branch_id):
     log.info("%s %s", request.method, request.build_absolute_uri())
 
@@ -88,12 +88,9 @@ def get_data(stats_for_id, year, month, week, stats_for):
         fill_missing_dates = FillMissingDates(query.get_start_date(), query.get_end_date())
         retrieved_data = None
 
-        if stats_for == 1:
-            serializer = CompanyResultSerializer(data)
-            retrieved_data = fill_missing_dates.for_company(serializer.data)
-        elif stats_for == 2:
-            serializer = BranchResultSerializer(data)
-            retrieved_data = fill_missing_dates.for_branch(serializer.data)
+        if stats_for == 1 or stats_for == 2:
+            serializer = ResultSerializer(data, many=True)
+            retrieved_data = fill_missing_dates.for_company_and_branch(serializer.data)
         elif stats_for == 3:
             serializer = MenuResultSerializer(data)
             retrieved_data = fill_missing_dates.for_menu(serializer.data)
