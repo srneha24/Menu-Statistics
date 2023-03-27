@@ -98,13 +98,22 @@ def get_data(stats_for_id, year, month, week, stats_for):
         return Response(retrieved_data, status=status.HTTP_302_FOUND)
 
 
+import datetime
+
+
 class HitRetrieveView(generics.RetrieveAPIView):
     queryset = HitDate.objects.all()
     serializer_class = HitSerializer
 
     def retrieve(self, request, *args, **kwargs):
-        menu = get_object_or_404(Menu, pk=kwargs.get('pk'))
-        hit = get_object_or_404(HitDate, menu=menu)
-        hit.count = F('count') + 1
-        hit.save()
+        current_date = datetime.datetime.now().strftime("%Y-%m-%d")
+
+        try:
+            menu = Menu.objects.get(pk=kwargs.get('pk'))
+            hit = HitDate.objects.get(menu=menu, date=current_date)
+            if hit:
+                hit.count = F('count') + 1
+                hit.save()
+        except:
+            HitDate.objects.create(menu=menu, count=1, date=current_date)
         return Response({"message": "API Hit"})
