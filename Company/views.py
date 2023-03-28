@@ -2,7 +2,6 @@ import logging
 import datetime
 
 from django.db.models import F
-from django.shortcuts import get_object_or_404
 from rest_framework import status, generics
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -12,7 +11,6 @@ from .models import Menu, HitDate
 from .queries import Queries, FillMissingDates
 from .serializers import MenuSerializer, HitSerializer
 from .serializers import ResultSerializer, MenuResultSerializer
-from .custom_models import QueryObject
 
 # Create your views here.
 
@@ -98,9 +96,6 @@ def get_data(stats_for_id, year, month, week, stats_for):
             retrieved_data = fill_missing_dates.for_menu(serializer.data)
 
         return Response(retrieved_data, status=status.HTTP_302_FOUND)
-
-
-import datetime
 
 
 class HitRetrieveView(generics.RetrieveAPIView):

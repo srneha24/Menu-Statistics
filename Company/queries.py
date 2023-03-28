@@ -4,33 +4,30 @@ import datetime
 from .custom_models import QueryObject
 
 
-import logging
-log = logging.getLogger('main')
-
 class Queries:
     __start = None
     __end = None
 
     def __company_query(self):
-        result = QueryObject.objects.raw("SELECT SUM(hit_date.count), hit_date.date, hit_date.id " +
+        result = QueryObject.objects.raw("SELECT SUM(hit_date.count), hit_date.date, company.id " +
                                          "FROM hit_date, menu, branch, company " +
                                          "WHERE company.id = %s " +
                                          "AND company.id = branch.company_id " +
                                          "AND branch.id = menu.branch_id and hit_date.menu_id = menu.id " +
                                          "AND hit_date.date BETWEEN %s AND %s " +
-                                         "GROUP BY hit_date.date, hit_date.id " +
+                                         "GROUP BY hit_date.date, company.id " +
                                          "ORDER BY hit_date.date",
                                          [self.__stats_for_id, self.__start, self.__end])
 
         return self.__create_model_object(result)
 
     def __branch_query(self):
-        result = QueryObject.objects.raw("SELECT SUM(hit_date.count), hit_date.date, hit_date.id " +
+        result = QueryObject.objects.raw("SELECT SUM(hit_date.count), hit_date.date, branch.id " +
                                          "FROM hit_date, menu, branch " +
                                          "WHERE branch.id = %s " +
                                          "AND branch.id = menu.branch_id and hit_date.menu_id = menu.id " +
                                          "AND hit_date.date BETWEEN %s AND %s " +
-                                         "GROUP BY hit_date.date, hit_date.id " +
+                                         "GROUP BY hit_date.date, branch.id " +
                                          "ORDER BY hit_date.date",
                                          [self.__stats_for_id, self.__start, self.__end])
         return self.__create_model_object(result)
@@ -126,6 +123,7 @@ class Queries:
             start = end - datetime.timedelta(days=day)
 
         self.__start = start.strftime('%Y-%m-%d')
+        log.debug(self.__end)
 
         if self.__stats_for == 1:
             return self.__company_query()
@@ -155,6 +153,7 @@ class Queries:
 class FillMissingDates:
 
     def for_company_and_branch(self, data):
+        log.debug(data)
         dates = [datetime.datetime.strptime(d['date'], '%Y-%m-%d') for d in data]
 
         start_date = datetime.datetime.strptime(self.start_date_str, '%Y-%m-%d')
