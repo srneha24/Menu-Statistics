@@ -130,7 +130,7 @@ class Queries:
         elif 2 <= week <= 4:
             start = end - datetime.timedelta(days=6)
         elif week == 5:
-            start = end - datetime.timedelta(days=day)
+            start = end - datetime.timedelta(days=int(end.strftime('%w')))
 
         self.__start = start.strftime('%Y-%m-%d')
 
