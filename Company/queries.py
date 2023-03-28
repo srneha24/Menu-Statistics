@@ -46,8 +46,12 @@ class Queries:
 
         return result
 
+    @staticmethod
+    def get_menu_names(branch_id):
+        return Menu.objects.filter(branch_id=branch_id).order_by('menu_name').values('menu_name')
+
     def empty_menu(self, branch_id):
-        result = Menu.objects.filter(branch_id=branch_id).order_by('menu_name').values('menu_name')
+        result = self.get_menu_names(branch_id)
 
         start_date = datetime.datetime.strptime(self.__start, '%Y-%m-%d')
         end_date = datetime.datetime.strptime(self.__end, '%Y-%m-%d')
@@ -179,7 +183,17 @@ class FillMissingDates:
 
         return new_data
 
-    def for_menu(self, data):
+    def __check_menu_names(self, data, branch_id):
+        menus = Queries.get_menu_names(branch_id)
+        missing_menus = list()
+
+        for menu in menus.values():
+            if menu['menu_name'] not in data:
+                missing_menus.append(menu['menu_name'])
+
+        return missing_menus
+
+    def for_menu(self, data, branch_id):
         start_date = datetime.datetime.strptime(self.start_date_str, '%Y-%m-%d')
         end_date = datetime.datetime.strptime(self.end_date_str, '%Y-%m-%d')
 
@@ -196,7 +210,19 @@ class FillMissingDates:
                 })
             data[menu] = new_menu_list
 
-        return data
+        missing_menus = self.__check_menu_names(data, branch_id)
+
+        if len(missing_menus) == 0:
+            return data
+        else:
+            all_dates = [start_date + datetime.timedelta(days=x) for x in range((end_date - start_date).days + 1)]
+            for missing_menu in missing_menus:
+                dates = list()
+                for date in all_dates:
+                    dates.append({"date": date.strftime('%Y-%m-%d'), "count": 0})
+                data[missing_menu] = dates
+
+            return data
 
     def __init__(self, start_date_str, end_date_str):
         self.start_date_str = start_date_str

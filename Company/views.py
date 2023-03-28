@@ -99,7 +99,7 @@ def get_data(stats_for_id, year, month, week, stats_for):
             retrieved_data = fill_missing_dates.for_company_and_branch(serializer.data)
         elif stats_for == 3:
             serializer = MenuResultSerializer(data)
-            retrieved_data = fill_missing_dates.for_menu(serializer.data)
+            retrieved_data = fill_missing_dates.for_menu(serializer.data, stats_for_id)
 
         return Response(retrieved_data, status=status.HTTP_302_FOUND)
 
