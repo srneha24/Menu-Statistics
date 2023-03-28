@@ -1,6 +1,7 @@
 import calendar
 import datetime
 
+from .models import Menu
 from .custom_models import QueryObject
 
 
@@ -30,6 +31,7 @@ class Queries:
                                          "GROUP BY hit_date.date, branch.id " +
                                          "ORDER BY hit_date.date",
                                          [self.__stats_for_id, self.__start, self.__end])
+
         return self.__create_model_object(result)
 
     def __menu_query(self):
@@ -41,17 +43,25 @@ class Queries:
                                          "GROUP BY hit_date.date, menu.id, branch.id, hit_date.id " +
                                          "ORDER BY hit_date.date",
                                          [self.__stats_for_id, self.__start, self.__end])
-        return result
-
-    def empty_menu(self):
-        result = QueryObject.objects.raw("SELECT menu.menu_name " +
-                                         "FROM menu, branch " +
-                                         "WHERE branch.id = %s " +
-                                         "AND branch.id = menu.branch_id " +
-                                         "ORDER BY menu.menu_name",
-                                         [self.__stats_for_id, self.__start, self.__end])
 
         return result
+
+    def empty_menu(self, branch_id):
+        result = Menu.objects.filter(branch_id=branch_id).order_by('menu_name').values('menu_name')
+
+        start_date = datetime.datetime.strptime(self.__start, '%Y-%m-%d')
+        end_date = datetime.datetime.strptime(self.__end, '%Y-%m-%d')
+
+        all_dates = [start_date + datetime.timedelta(days=x) for x in range((end_date - start_date).days + 1)]
+        new_data = dict()
+
+        for res in result:
+            dates = list()
+            for date in all_dates:
+                dates.append({"date": date.strftime('%Y-%m-%d'), "count": 0})
+            new_data[res["menu_name"]] = dates
+
+        return new_data
 
     def __create_model_object(self, result):
         obj = list()
@@ -123,7 +133,6 @@ class Queries:
             start = end - datetime.timedelta(days=day)
 
         self.__start = start.strftime('%Y-%m-%d')
-        log.debug(self.__end)
 
         if self.__stats_for == 1:
             return self.__company_query()
@@ -153,7 +162,6 @@ class Queries:
 class FillMissingDates:
 
     def for_company_and_branch(self, data):
-        log.debug(data)
         dates = [datetime.datetime.strptime(d['date'], '%Y-%m-%d') for d in data]
 
         start_date = datetime.datetime.strptime(self.start_date_str, '%Y-%m-%d')
@@ -180,7 +188,6 @@ class FillMissingDates:
             date_range = [(start_date + datetime.timedelta(days=x)).date() for x in
                           range((end_date - start_date).days + 1)]
             new_menu_list = []
-            log.debug(menu_list[0]['date'] == '2023-03-02')
             for date in date_range:
                 count = sum(item['count'] for item in menu_list if item['date'] == date)
                 new_menu_list.append({

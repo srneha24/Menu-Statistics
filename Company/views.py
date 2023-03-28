@@ -86,8 +86,13 @@ def get_data(stats_for_id, year, month, week, stats_for):
             3 = Menu
         """
 
-        fill_missing_dates = FillMissingDates(query.get_start_date(), query.get_end_date())
         retrieved_data = None
+
+        if stats_for == 3 and len(data) == 0:
+            retrieved_data = query.empty_menu(stats_for_id)
+            return Response(retrieved_data, status=status.HTTP_200_OK)
+
+        fill_missing_dates = FillMissingDates(query.get_start_date(), query.get_end_date())
 
         if stats_for == 1 or stats_for == 2:
             serializer = ResultSerializer(data, many=True)
